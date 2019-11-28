@@ -71,7 +71,8 @@ these macros are defined, the boot loader usees them.
 
 #ifndef USB_CFG_DMINUS_BIT
   /* This is Revision 3 and later (where PD6 and PD7 were swapped */
-  #define USB_CFG_DMINUS_BIT      7    /* Rev.2 and previous was 6 */
+  // #define USB_CFG_DMINUS_BIT      7    /* Rev.2 and previous was 6 */
+  #define USB_CFG_DMINUS_BIT      3    /* Rev.2 and previous was 6 */
 #endif
 /* This is the bit number in USB_CFG_IOPORT where the USB D- line is connected.
  * This may be any bit in the port.
@@ -84,14 +85,16 @@ these macros are defined, the boot loader usees them.
  * to interrupt pin INT0!
  */
 #ifndef JUMPER_PORT
-  #define JUMPER_PORT		USB_CFG_IOPORTNAME
+  //#define JUMPER_PORT		USB_CFG_IOPORTNAME
+  #define JUMPER_PORT		B
 #endif
 /* 
  * jumper is connected to this port
  */
 #ifndef JUMPER_BIT
   /* This is Revision 3 and later (where PD6 and PD7 were swapped */
-  #define JUMPER_BIT           6       /* Rev.2 and previous was 7 */
+  // #define JUMPER_BIT           6       /* Rev.2 and previous was 7 */
+  #define JUMPER_BIT           0       /* Rev.2 and previous was 7 */
 #endif
 /* 
  * jumper is connected to this bit in port "JUMPER_PORT", active low
@@ -656,5 +659,25 @@ static inline bool bootLoaderCondition(void)
 #endif /* __ASSEMBLER__ */
 
 /* ------------------------------------------------------------------------- */
+
+#define USE_LED 1
+#define LED_PORT B
+#define LED_BIT 2
+
+#if USE_LED
+#define ledInit() { \
+    PIN_DDR(LED_PORT) |= (1 << LED_BIT); \
+    PIN_PORT(LED_PORT) |= (1 << LED_BIT); \
+}
+
+#define ledExit() { \
+    PIN_DDR(LED_PORT) &= ~(1 << LED_BIT); \
+    PIN_PORT(LED_PORT) &= ~(1 << LED_BIT); \
+}
+
+#define ledBlink() { \
+    PIN_PORT(LED_PORT) ^= (1 << LED_BIT); \
+}
+#endif
 
 #endif /* __bootloader_h_included__ */

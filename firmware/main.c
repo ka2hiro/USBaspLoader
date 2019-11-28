@@ -781,6 +781,10 @@ int __attribute__((__noreturn__)) main(void)
 #if (HAVE_BOOTLOADER_ADDITIONALMSDEVICEWAIT>0)
     _mydelay_ms(HAVE_BOOTLOADER_ADDITIONALMSDEVICEWAIT);
 #endif
+#if USE_LED
+    uint ledCount = 0;
+    ledInit();
+#endif
     if(bootLoaderCondition()){
 #if (BOOTLOADER_CAN_EXIT)
 #	if (USE_EXCESSIVE_ASSEMBLER)
@@ -889,12 +893,22 @@ asm  volatile  (
 #endif
 #endif
 
+#if USE_LED
+    // PIN_PORT(LED_PORT) |= (1 << LED_BIT);
+    if(--ledCount == 0) {
+        ledBlink();
+    }
+#endif
+
 #if BOOTLOADER_CAN_EXIT
         }while (stayinloader);	/* main event loop, if BOOTLOADER_CAN_EXIT*/
 #else
         }while (1);  		/* main event loop */
 #endif
     }
+#if USE_LED
+    ledExit();
+#endif
     leaveBootloader();
 }
 
